@@ -39,7 +39,7 @@ class IngredientInput(graphene.InputObjectType):
     id = graphene.ID()
     name = graphene.String()
     notes = graphene.String()
-    category = graphene.List(CategoryInput)
+    category = graphene.Int()
 
 class CreateCategory(graphene.Mutation):
     class Arguments:
@@ -84,19 +84,18 @@ class CreateIngredient(graphene.Mutation):
     @staticmethod
     def mutate(root, info, input=None):
         ok = True
-        category_array = []
-        for item_categorys in input.category:
-            categorys = Category.objects.get(pk=item_categorys.id)
-            if categorys is None:
-                return CreateIngredient(ok=False, ingredient=None)
-            category_array.append(categorys) 
-            ingredient_instance = Ingredient(name=input.name)     
-            ingredient_instance.notes = notes=input.notes   
-            print(ingredient_instance)
-            ingredient_instance.save()
-            print("hola")
-            ingredient_instance.category.set(category_array)
-            return CreateIngredient(ok=ok, ingredient=ingredient_instance)
+        category = Category.objects.get(pk=input.category)
+        if category is None:
+            return CreateIngredient(ok=ok, ingredient=None)
+        intance_ingredient = Ingredient(
+            name=input.name,
+            notes=input.notes,
+            category=category.pk
+        )
+        print(intance_ingredient)
+        intance_ingredient.save()
+        return CreateCategory(ok = ok, ingredient=intance_ingredient)
+
 
 class Mutation(graphene.ObjectType):
     create_category = CreateCategory.Field()

@@ -14,4 +14,7 @@ class Ingredient(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='ingredients')
 
     def __str__(self):
-        return self.name
+        return {
+            'name': self.name,
+            'category': self.category
+        }
