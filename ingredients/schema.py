@@ -1,7 +1,7 @@
 import graphene
 from graphene_django.types import DjangoObjectType, ObjectType
 from .models import Category, Ingredient
-from graphql_relay import from_global_id
+
 
 class CategoryType(DjangoObjectType):
     class Meta:

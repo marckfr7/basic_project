@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -38,13 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ingredients',
+    'user',
     'graphene_django'
 ]
 
-GRAPHENE = {
-    'SCHEMA': 'cookbook.schema.schema',
-    "ATOMIC_MUTATIONS": True,
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
 
 ROOT_URLCONF = 'cookbook.urls'
 
@@ -127,4 +126,11 @@ STATIC_URL = 'static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+#DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'user.MyUser'
+
+GRAPHENE = {
+    "SCHEMA": "cookbook.schema.schema",
+    "ATOMIC_MUTATIONS": True,
+}
