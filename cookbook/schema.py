@@ -1,11 +1,10 @@
 import graphene
-from graphene_django import DjangoObjectType
-from ingredients.models import Category, Ingredient
 from ingredients import schema
 from user import schemas
+import premium.schema
 
 
-class Query(schema.Query, schemas.Query, graphene.ObjectType):
+class Query(schema.Query, schemas.Query, premium.schema.Query, graphene.ObjectType):
     pass
 
 class Mutation(schema.Mutation, schemas.Mutation, graphene.ObjectType):
