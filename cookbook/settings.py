@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'ingredients',
     'premium',
     'user',
-    'graphene_django'
+    'graphene_django',
+    'graphql_jwt',
 ]
 
 

@@ -2,31 +2,20 @@ import graphene
 from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType, ObjectType
 from .models import MyUser
-from .utils import create_acces_token, create_refresh_token
-from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from premium.models import Premium
+
+from graphql_jwt.shortcuts import create_refresh_token, get_token
+import graphql_jwt
 
 class MyUserType(DjangoObjectType):
     class Meta:
         model = MyUser
 
 class Query(ObjectType):
-    user = graphene.Field(MyUserType, email = graphene.String(), password=graphene.String())    
-
-    def resolve_user(self, info, **kwargs):
-        email = kwargs.get('email')
-        password = kwargs.get('password')
-        id = kwargs.get('id')       
-                
-        if email and password :            
-            user = authenticate(email = email, password=password)
-            if user:
-                user.save()           
-                return user
-        raise GraphQLError('Email o contraseña incorrectas')
+    pass
 
 
 class MyUserInput(graphene.InputObjectType):
@@ -55,10 +44,9 @@ class CreateMyUser(graphene.Mutation):
             username_user = MyUser.objects.filter(username=username).values().first()            
             if username_user is None:
                 ok = True        
-                token = create_acces_token({"email": email, "username": username})                 
                 user = MyUser.objects.create_user(email=email, password=password, username=username)
+                token = get_token(user)
                 user.save()
-                #login(user)
                 return CreateMyUser(ok=ok, user = user, token = token)
             raise GraphQLError('El usuario ya existe') 
         raise GraphQLError('El email ya esta siendo usado')
@@ -119,6 +107,9 @@ class Mutation(graphene.ObjectType):
     create_my_user = CreateMyUser.Field()
     update_my_user = UpdateMyUser.Field()
     premiun_user = PremiumUser.Field()
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
     
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
