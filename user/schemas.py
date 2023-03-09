@@ -13,10 +13,9 @@ class MyUserType(DjangoObjectType):
     class Meta:
         model = MyUser
 
-
 class Query(ObjectType):
     user = graphene.Field(MyUserType, email = graphene.String(), password=graphene.String())    
-    
+
     def resolve_user(self, info, **kwargs):
         email = kwargs.get('email')
         password = kwargs.get('password')
@@ -25,9 +24,7 @@ class Query(ObjectType):
         if email and password :            
             user = authenticate(email = email, password=password)
             if user:
-                token = create_acces_token({"email": email, "id": id})
-                user.save()
-                #login(self.request, user)               
+                user.save()           
                 return user
         raise GraphQLError('Email o contraseña incorrectas')
 

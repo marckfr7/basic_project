@@ -134,4 +134,7 @@ AUTH_USER_MODEL = 'user.MyUser'
 GRAPHENE = {
     "SCHEMA": "cookbook.schema.schema",
     "ATOMIC_MUTATIONS": True,
+    "MIDDLEWARE": [
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
+    ],
 }
