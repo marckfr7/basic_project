@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'premium',
     'user',
     'graphene_django',
-    'graphql_jwt',
+    'graphql_jwt.refresh_token.apps.RefreshTokenConfig',
 ]
 
 
@@ -138,4 +138,11 @@ GRAPHENE = {
     "MIDDLEWARE": [
         "graphql_jwt.middleware.JSONWebTokenMiddleware",
     ],
+}
+
+GRAPHQL_JWT = {
+    "JWT_ALLOW_ARGUMENT": True,
+    #"JWT_ARGUMENT_NAME": "lola",
+    "JWT_VERIFY_EXPIRATION": True,
+    "JWT_LONG_RUNNING_REFRESH_TOKEN": True,
 }

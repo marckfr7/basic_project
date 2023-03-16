@@ -2,20 +2,25 @@ import graphene
 from graphql import GraphQLError
 from graphene_django.types import DjangoObjectType, ObjectType
 from .models import MyUser
-from django.contrib.auth.decorators import login_required
+from graphql_jwt.decorators import login_required
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from premium.models import Premium
 
-from graphql_jwt.shortcuts import create_refresh_token, get_token
 import graphql_jwt
+from graphql_jwt.shortcuts import create_refresh_token, get_token, get_user_by_token
+
 
 class MyUserType(DjangoObjectType):
     class Meta:
         model = MyUser
 
 class Query(ObjectType):
-    pass
+    views = graphene.Field(MyUserType, token = graphene.String(required=True))    
+
+    @login_required
+    def resolve_views(self, info, **kwargs):
+        return info.context.user
 
 
 class MyUserInput(graphene.InputObjectType):
@@ -31,6 +36,7 @@ class CreateMyUser(graphene.Mutation):
     ok = graphene.Boolean()
     user = graphene.Field(MyUserType)
     token = graphene.String()
+    rt = graphene.String()
     
     @staticmethod
     def mutate(root, info, input=None):  
@@ -46,10 +52,11 @@ class CreateMyUser(graphene.Mutation):
                 ok = True        
                 user = MyUser.objects.create_user(email=email, password=password, username=username)
                 token = get_token(user)
+                rt = create_refresh_token(user)
                 user.save()
-                return CreateMyUser(ok=ok, user = user, token = token)
+                return CreateMyUser(ok=ok, user = user, token = token, rt = rt)
             raise GraphQLError('El usuario ya existe') 
-        raise GraphQLError('El email ya esta siendo usado')
+        raise GraphQLError("El email ya esta siendo usado")
 
 
 class UpdateMyUser(graphene.Mutation):
